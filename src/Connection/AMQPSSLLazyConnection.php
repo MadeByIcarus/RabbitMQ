@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\RabbitMQ\Connection;
+namespace Icarus\RabbitMQ\Connection;
 
 
 use PhpAmqpLib\Connection\AMQPSSLConnection;
