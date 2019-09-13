@@ -4,10 +4,10 @@ declare(strict_types=1);
 namespace Icarus\RabbitMQ\DI;
 
 
-use App\RabbitMQ\Connection\AMQPSSLLazyConnection;
 use Icarus\RabbitMQ\Command\ConsumerCommand;
 use Icarus\RabbitMQ\Command\SystemdServicesGenerator;
 use Icarus\RabbitMQ\Command\StdInProducerCommand;
+use Icarus\RabbitMQ\Connection\AMQPSSLLazyConnection;
 use Icarus\RabbitMQ\Consumer;
 use Icarus\RabbitMQ\Producer;
 use Icarus\RabbitMQ\RabbitMQ;
