@@ -1,0 +1,41 @@
+#this is an example neon cofngiruation file
+
+extensions:
+    rabbitmq: Icarus\RabbitMQ\DI\RabbitMQExtension
+    # if you also use broker messaging package, it is a good idea to register it here to keep it simple.
+    brokerMessaging: Icarus\BrokerMessaging\DI\BrokerMessageSenderExtension
+
+rabbitmq:
+    connection:
+        host: demo.localbitman.com
+        ssl:
+            #cafile: /Users/pavelgajdos/eth-localbitman-server-cert.pem
+            #local_cert: /Users/pavelgajdos/eth-localbitman-cert.pem
+            verify_peer: false
+
+    queues: # an array of [key => queueName], queueName must be defined on the rabbitmq server
+        defaultQueue: ahoj
+
+    exchanges:
+        defaultExchange:
+            name: amq.direct
+
+    producers:
+        testProducer:
+            exchange: defaultExchange
+            routingKey: ahoj
+
+    consumers:
+        testConsumer:
+            queue: defaultQueue
+            processor: App\RabbitMQ\Processors\TestProcessor
+
+    consumerServicesParameters:
+        testConsumer: -m 100 -l 256
+
+services:
+    testProcessor:
+        factory: App\RabbitMQ\Processors\TestProcessor
+        autowired: self
+
+
