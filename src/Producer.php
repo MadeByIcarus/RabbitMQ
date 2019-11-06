@@ -79,7 +79,11 @@ class Producer implements IProducer
 
     public function addToBatch(AMQPMessage $message): void
     {
-        $this->getChannel()->batch_basic_publish($message);
+        $this->getChannel()->batch_basic_publish(
+            $message,
+            $this->exchange,
+            $this->routingKey
+        );
     }
 
 
