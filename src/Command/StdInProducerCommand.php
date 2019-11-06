@@ -3,7 +3,7 @@
 namespace Icarus\RabbitMQ\Command;
 
 
-use Icarus\RabbitMQ\AMQPMessageFactory;
+use Icarus\RabbitMQ\Messages\AMQPMessageFactory;
 use Icarus\RabbitMQ\RabbitMQ;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;

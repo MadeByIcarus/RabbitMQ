@@ -114,17 +114,24 @@ class RabbitMQExtension extends CompilerExtension
         $builder = $this->getContainerBuilder();
 
         foreach ($config->producers as $name => $data) {
-            $exchange = $config->exchanges[$data->exchange]->name;
+            $exchange = $config->exchanges[$data->exchange] ?? null;
+            if (!$exchange) {
+                throw new \InvalidArgumentException("Unknown exchange '" . $data->exchange . "'.");
+            }
+            $exchangeName = $exchange->name;
             $routingKey = $data->routingKey;
             $name = 'producer.' . $name;
 
             $builder->addDefinition($this->prefix($name))
-                ->setFactory(Producer::class, [$exchange, $routingKey])
+                ->setFactory(Producer::class, [$exchangeName, $routingKey])
                 ->addTag(self::PRODUCER_TAG);
         }
 
         foreach ($config->consumers as $name => $data) {
-            $queue = $config->queues[$data->queue];
+            $queue = $config->queues[$data->queue] ?? null;
+            if (!$queue) {
+                throw new \InvalidArgumentException("Unknown queue '" . $data->queue . "'.");
+            }
             $processorClass = $data->processor;
             $processorServiceDef = $builder->getDefinitionByType($processorClass);
             $processorServiceName = $processorServiceDef->getName();
