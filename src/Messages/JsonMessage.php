@@ -52,7 +52,10 @@ abstract class JsonMessage
 
     public function __toString()
     {
-        $arr = ['type' => static::class, 'msgId' => $this->getMsgId()] + $this->getValues();
+        $arr = ['type' => static::class] + $this->getValues();
+        if ($this->getMsgId()) {
+            $arr['id'] = $this->getMsgId();
+        }
         return Json::encode($arr);
     }
 
@@ -94,7 +97,7 @@ abstract class JsonMessage
         }
 
         $messageObject = new $class(...$parameters);
-        $messageObject->setMsgId($arr['msgId']);
+        $messageObject->setMsgId($arr['id']);
         return $messageObject;
     }
 }
