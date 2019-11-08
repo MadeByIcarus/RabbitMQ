@@ -132,14 +132,14 @@ class RabbitMQExtension extends CompilerExtension
             if (!$queue) {
                 throw new \InvalidArgumentException("Unknown queue '" . $data->queue . "'.");
             }
-            $processorClass = $data->processor;
-            $processorServiceDef = $builder->getDefinitionByType($processorClass);
-            $processorServiceName = $processorServiceDef->getName();
+            $handlerClass = $data->handler;
+            $handlerDefinition = $builder->getDefinitionByType($handlerClass);
+            $handlerServiceName = $handlerDefinition->getName();
             $consumerTag = $data->consumerTag;
 
             $name = 'consumer.' . $name;
             $builder->addDefinition($this->prefix($name))
-                ->setFactory(Consumer::class, [$queue, $consumerTag, '@' . $processorServiceName])
+                ->setFactory(Consumer::class, [$queue, $consumerTag, '@' . $handlerServiceName])
                 ->addTag(self::CONSUMER_TAG);
         }
     }

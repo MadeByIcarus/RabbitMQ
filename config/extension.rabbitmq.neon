@@ -28,7 +28,7 @@ rabbitmq:
     consumers:
         testConsumer:
             queue: defaultQueue
-            processor: App\RabbitMQ\Processors\TestProcessor
+            handler: App\RabbitMQ\Processors\TestProcessor
 
     consumerServicesParameters:
         testConsumer: -m 100 -l 256
