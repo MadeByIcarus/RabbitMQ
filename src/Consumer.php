@@ -23,9 +23,9 @@ class Consumer implements IConsumer
     private $rabbitMQ;
 
     /**
-     * @var IAMQPMessageProcessor
+     * @var IIncomingMessageHandler
      */
-    private $messageProcessor;
+    private $messageHandler;
 
     private $consumerTag;
 
@@ -56,12 +56,12 @@ class Consumer implements IConsumer
     public function __construct(
         string $queueName,
         ?string $consumerTag,
-        IAMQPMessageProcessor $messageProcessor,
+        IIncomingMessageHandler $messageHandler,
         RabbitMQ $rabbitMQ
     )
     {
         $this->queueName = $queueName;
-        $this->messageProcessor = $messageProcessor;
+        $this->messageHandler = $messageHandler;
         $this->rabbitMQ = $rabbitMQ;
         $this->consumerTag = empty($consumerTag) ? sprintf("PHPPROCESS_%s_%s", gethostname(), getmypid()) : $consumerTag;
     }
@@ -88,14 +88,13 @@ class Consumer implements IConsumer
 
 
 
-    public function processMessage(AMQPMessage $message): void
+    public function consumeMessage(AMQPMessage $message): void
     {
         /** @var AMQPChannel $channel */
         $channel = $message->delivery_info['channel'];
         $deliveryTag = $message->delivery_info['delivery_tag'];
 
-        $result = $this->messageProcessor->process($message);
-        echo "MESSAGE: $message->body $result\n\n\n";
+        $result = $this->messageHandler->handle($message);
 
         switch ($result) {
             case IConsumer::MESSAGE_ACK:
@@ -124,7 +123,7 @@ class Consumer implements IConsumer
             false,
             false,
             false,
-            [$this, 'processMessage']
+            [$this, 'consumeMessage']
         );
     }
 
@@ -135,7 +134,7 @@ class Consumer implements IConsumer
         if (
             $this->forceStop
             ||
-            ($this->maxMessageCount > 0 && $this->maxMessageCount < $this->consumedMessagesCount)
+            ($this->maxMessageCount > 0 && $this->maxMessageCount <= $this->consumedMessagesCount)
             ||
             !$this->isMemoryUsageOk()
         ) {
@@ -148,7 +147,6 @@ class Consumer implements IConsumer
     protected function stop(): void
     {
         $this->getChannel()->basic_cancel($this->getConsumerTag());
-
     }
 
 

@@ -37,9 +37,9 @@ class Producer implements IProducer
     private $channel;
 
     /**
-     * @var IConfirmHandler
+     * @var IMessageConfirmationHandler
      */
-    private $confirmHandler;
+    private $confirmationHandler;
 
 
 
@@ -47,13 +47,13 @@ class Producer implements IProducer
         string $exchange,
         string $routingKey,
         RabbitMQ $rabbitMQ,
-        IConfirmHandler $confirmHandler
+        IMessageConfirmationHandler $confirmationHandler
     )
     {
         $this->exchange = $exchange;
         $this->routingKey = $routingKey;
         $this->rabbitMQ = $rabbitMQ;
-        $this->confirmHandler = $confirmHandler;
+        $this->confirmationHandler = $confirmationHandler;
     }
 
 
@@ -63,13 +63,13 @@ class Producer implements IProducer
         if (!$this->channel) {
             $this->channel = $this->rabbitMQ->getConnection()->channel();
 
-            $this->channel->confirm_select(true);
+            $this->channel->confirm_select();
 
             $this->channel->set_ack_handler(function (AMQPMessage $message) {
-                $this->confirmHandler->handleAck($message);
+                $this->confirmationHandler->handleAck($message);
             });
             $this->channel->set_nack_handler(function (AMQPMessage $message) {
-                $this->confirmHandler->handleNack($message);
+                $this->confirmationHandler->handleNack($message);
             });
         }
         return $this->channel;

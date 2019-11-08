@@ -7,7 +7,7 @@ namespace Icarus\RabbitMQ;
 use PhpAmqpLib\Message\AMQPMessage;
 
 
-interface IConfirmHandler
+interface IMessageConfirmationHandler
 {
 
     public function handleAck(AMQPMessage $message);

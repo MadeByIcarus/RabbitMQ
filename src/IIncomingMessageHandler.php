@@ -7,8 +7,8 @@ namespace Icarus\RabbitMQ;
 use PhpAmqpLib\Message\AMQPMessage;
 
 
-interface IAMQPMessageProcessor
+interface IIncomingMessageHandler
 {
 
-    public function process(AMQPMessage $message): int;
+    public function handle(AMQPMessage $message): int;
 }
