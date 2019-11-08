@@ -53,7 +53,7 @@ class RabbitMQExtension extends CompilerExtension
             ])),
             'consumers' => Expect::arrayOf(Expect::structure([
                 'queue' => Expect::string()->required(),
-                'processor' => Expect::string()->required(),
+                'handler' => Expect::string()->required(),
                 'consumerTag' => Expect::string()->default(null)
             ])),
             'consumerServicesParameters' => Expect::arrayOf(Expect::string())
