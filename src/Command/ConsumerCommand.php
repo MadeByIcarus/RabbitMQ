@@ -105,7 +105,9 @@ class ConsumerCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $output->writeln("Started at " . time());
         $this->consumer->consume($this->amount, $this->executionTime, $this->memoryLimit);
+        $output->writeln("Finished at ". time());
         return 0;
     }
 
