@@ -150,7 +150,7 @@ class Consumer implements IConsumer
         if (
             $this->forceStop
             ||
-            ($this->maxExecutionTime && (time() - $this->executionStartedTimestamp) > $this->maxExecutionTime)
+            ($this->maxExecutionTime && (time() - $this->executionStartedTimestamp) >= $this->maxExecutionTime)
             ||
             ($this->maxMessageCount > 0 && $this->maxMessageCount <= $this->consumedMessagesCount)
             ||
