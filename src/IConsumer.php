@@ -17,5 +17,5 @@ interface IConsumer
 
 
 
-    public function consume(?int $maxMessages, ?int $maxMemoryLimit): void;
+    public function consume(?int $maxMessages, ?int $maxExecutionTime, ?int $maxMemoryLimit): void;
 }

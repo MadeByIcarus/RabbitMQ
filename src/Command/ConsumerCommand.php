@@ -41,6 +41,11 @@ class ConsumerCommand extends Command
      */
     private $memoryLimit;
 
+    /**
+     * @var bool|string|string[]|null
+     */
+    private $executionTime;
+
 
 
     public function __construct(RabbitMQ $rabbitMQ)
@@ -58,7 +63,8 @@ class ConsumerCommand extends Command
             ->addArgument('name', InputArgument::REQUIRED, 'Consumer Name')
             ->addOption('messages', 'm', InputOption::VALUE_OPTIONAL, 'Messages to consume', 0)
             ->addOption('route', 'r', InputOption::VALUE_OPTIONAL, 'Routing Key', '')
-            ->addOption('memory-limit', 'l', InputOption::VALUE_OPTIONAL, 'Allowed memory for this process', null);
+            ->addOption('memory-limit', 'l', InputOption::VALUE_OPTIONAL, 'Allowed memory for this process', null)
+            ->addOption('execution-time', 't', InputOption::VALUE_OPTIONAL, 'Maximum execution time', null);
     }
 
 
@@ -82,6 +88,10 @@ class ConsumerCommand extends Command
             throw new \InvalidArgumentException("The -l option should be null or greater than 0");
         }
 
+        if (($this->executionTime = $input->getOption('execution-time')) <= 0 && !is_null($this->executionTime)) {
+            throw new \InvalidArgumentException("The -t option should be null or greater than 0");
+        }
+
         $this->consumer = $this->rabbitMQ->getConsumer($input->getArgument('name'));
     }
 
@@ -95,7 +105,7 @@ class ConsumerCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->consumer->consume($this->amount, $this->memoryLimit);
+        $this->consumer->consume($this->amount, $this->executionTime, $this->memoryLimit);
         return 0;
     }
 

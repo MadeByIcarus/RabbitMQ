@@ -49,6 +49,16 @@ class Consumer implements IConsumer
     /**
      * @var int|null
      */
+    private $maxExecutionTime;
+
+    /**
+     * @var int
+     */
+    private $executionStartedTimestamp;
+
+    /**
+     * @var int|null
+     */
     private $memoryLimit;
 
 
@@ -68,9 +78,11 @@ class Consumer implements IConsumer
 
 
 
-    public function consume(?int $maxMessages, ?int $maxMemoryLimit): void
+    public function consume(?int $maxMessages, ?int $maxExecutionTime, ?int $maxMemoryLimit): void
     {
+        $this->executionStartedTimestamp = time();
         $this->maxMessageCount = $maxMessages;
+        $this->maxExecutionTime = $maxExecutionTime;
         $this->memoryLimit = $maxMemoryLimit;
         $this->setup();
 
@@ -133,6 +145,8 @@ class Consumer implements IConsumer
     {
         if (
             $this->forceStop
+            ||
+            ($this->maxExecutionTime && (time() - $this->executionStartedTimestamp) > $this->maxExecutionTime)
             ||
             ($this->maxMessageCount > 0 && $this->maxMessageCount <= $this->consumedMessagesCount)
             ||
