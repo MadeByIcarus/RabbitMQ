@@ -86,11 +86,15 @@ class Consumer implements IConsumer
         $this->memoryLimit = $maxMemoryLimit;
         $this->setup();
 
+        $timeout = $maxExecutionTime;
+
         while ($this->getChannel()->is_consuming()) {
-            $this->shouldStop();
+            if ($this->shouldStop()) {
+                $timeout = 1;
+            }
 
             try {
-                $this->getChannel()->wait();
+                $this->getChannel()->wait(null, false, $timeout);
                 usleep(1000);
             } catch (AMQPTimeoutException $e) {
                 // intentionally not throwing the exception
@@ -153,14 +157,16 @@ class Consumer implements IConsumer
             !$this->isMemoryUsageOk()
         ) {
             $this->stop();
+            return true;
         }
+        return false;
     }
 
 
 
     protected function stop(): void
     {
-        $this->getChannel()->basic_cancel($this->getConsumerTag());
+        $this->getChannel()->basic_cancel($this->getConsumerTag(), true);
     }
 
 
