@@ -43,7 +43,13 @@ abstract class JsonMessage
         $values = [];
         foreach ($properties as $property) {
             $name = $property->getName();
-            $values[$name] = $this->{"get" . Strings::firstUpper($name)}();
+            $value = $this->{"get" . Strings::firstUpper($name)}();
+
+            if ($value instanceof \DateTime) {
+                $value = $value->getTimestamp();
+            }
+
+            $values[$name] = $value;
         }
         return $values;
     }
@@ -90,6 +96,9 @@ abstract class JsonMessage
                     case "float":
                         $value = (float)$value;
                         break;
+                    case "DateTime":
+                        $value = \DateTime::createFromFormat("U", "$value");
+                        break;
                 }
             }
 
@@ -97,7 +106,7 @@ abstract class JsonMessage
         }
 
         $messageObject = new $class(...$parameters);
-        $messageObject->setMsgId($arr['id']);
+        $messageObject->setMsgId($arr['id'] ?? "");
         return $messageObject;
     }
 }

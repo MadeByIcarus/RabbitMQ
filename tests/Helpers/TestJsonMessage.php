@@ -9,14 +9,17 @@ use Icarus\RabbitMQ\Messages\JsonMessage;
 
 class TestJsonMessage extends JsonMessage
 {
+
     /**
      * @var string
      */
     private $text;
+
     /**
      * @var int
      */
     private $number;
+
     /**
      * @var float
      */
@@ -24,13 +27,23 @@ class TestJsonMessage extends JsonMessage
 
     private $mixedType;
 
-    public function __construct(string $text, int $number, float $anotherNumber, $mixedType)
+    /**
+     * @var \DateTime
+     */
+    private $datetime;
+
+
+
+    public function __construct(string $text, int $number, float $anotherNumber, $mixedType, \DateTime $datetime)
     {
         $this->text = $text;
         $this->number = $number;
         $this->anotherNumber = $anotherNumber;
         $this->mixedType = $mixedType;
+        $this->datetime = $datetime;
     }
+
+
 
     /**
      * @return string
@@ -40,6 +53,8 @@ class TestJsonMessage extends JsonMessage
         return $this->text;
     }
 
+
+
     /**
      * @return int
      */
@@ -47,6 +62,8 @@ class TestJsonMessage extends JsonMessage
     {
         return $this->number;
     }
+
+
 
     /**
      * @return float
@@ -56,6 +73,8 @@ class TestJsonMessage extends JsonMessage
         return $this->anotherNumber;
     }
 
+
+
     /**
      * @return mixed
      */
@@ -64,5 +83,14 @@ class TestJsonMessage extends JsonMessage
         return $this->mixedType;
     }
 
+
+
+    /**
+     * @return \DateTime
+     */
+    public function getDatetime(): \DateTime
+    {
+        return $this->datetime;
+    }
 
 }
