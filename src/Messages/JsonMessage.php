@@ -43,7 +43,8 @@ abstract class JsonMessage
         $values = [];
         foreach ($properties as $property) {
             $name = $property->getName();
-            $value = $this->{"get" . Strings::firstUpper($name)}();
+            $prefix = ($property->getType() === "boolean") ? "is" : "get";
+            $value = $this->{$prefix . Strings::firstUpper($name)}();
 
             if ($value instanceof \DateTime) {
                 $value = $value->getTimestamp();
