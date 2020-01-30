@@ -32,15 +32,21 @@ class TestJsonMessage extends JsonMessage
      */
     private $datetime;
 
+    /**
+     * @var bool
+     */
+    private $okay;
 
 
-    public function __construct(string $text, int $number, float $anotherNumber, $mixedType, \DateTime $datetime)
+
+    public function __construct(string $text, int $number, float $anotherNumber, $mixedType, \DateTime $datetime, bool $okay)
     {
         $this->text = $text;
         $this->number = $number;
         $this->anotherNumber = $anotherNumber;
         $this->mixedType = $mixedType;
         $this->datetime = $datetime;
+        $this->okay = $okay;
     }
 
 
@@ -91,6 +97,16 @@ class TestJsonMessage extends JsonMessage
     public function getDatetime(): \DateTime
     {
         return $this->datetime;
+    }
+
+
+
+    /**
+     * @return bool
+     */
+    public function isOkay(): bool
+    {
+        return $this->okay;
     }
 
 }

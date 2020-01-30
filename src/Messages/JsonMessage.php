@@ -43,16 +43,36 @@ abstract class JsonMessage
         $values = [];
         foreach ($properties as $property) {
             $name = $property->getName();
-            $prefix = ($property->getType() === "boolean") ? "is" : "get";
-            $value = $this->{$prefix . Strings::firstUpper($name)}();
-
-            if ($value instanceof \DateTime) {
-                $value = $value->getTimestamp();
-            }
-
+            $value = $this->getValue($property);
             $values[$name] = $value;
         }
         return $values;
+    }
+
+
+
+    private function getValue(\ReflectionProperty $property)
+    {
+        $prefixes = ['get', 'is'];
+        $suffix = Strings::firstUpper($property->getName());
+        foreach ($prefixes as $prefix) {
+            $methodName = $prefix . $suffix;
+            if (!method_exists($this, $methodName)) {
+                continue;
+            }
+            $value = $this->$methodName();
+        }
+
+        if (!isset($value)) {
+            trigger_error("No getter for {$property->getName()} (both get$suffix and is$suffix do not exist", E_USER_ERROR);
+            return null;
+        }
+
+        if ($value instanceof \DateTime) {
+            $value = $value->getTimestamp();
+        }
+
+        return $value;
     }
 
 
@@ -90,12 +110,15 @@ abstract class JsonMessage
             $value = $arr[$name];
 
             if ($parameter->getType()) {
-                switch ($parameter->getType()->getName()) {
+                switch ((string)$parameter->getType()) {
                     case "int":
                         $value = (int)$value;
                         break;
                     case "float":
                         $value = (float)$value;
+                        break;
+                    case "bool":
+                        $value = (bool)$value;
                         break;
                     case "DateTime":
                         $value = \DateTime::createFromFormat("U", "$value");

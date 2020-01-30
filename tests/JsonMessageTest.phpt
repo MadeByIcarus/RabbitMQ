@@ -6,6 +6,7 @@ namespace IcarusTests\RabbitMQ;
 
 require __DIR__ . '/bootstrap.php';
 require_once __DIR__ . '/Helpers/TestJsonMessage.php';
+require_once __DIR__ . '/Helpers/TestInvalidJsonMessage.php';
 
 
 use Icarus\RabbitMQ\Messages\JsonMessage;
@@ -21,7 +22,16 @@ class JsonMessageTest extends TestCase
     public function testMessageToJson()
     {
         $timestamp = 1546300800;
-        $message = new TestJsonMessage("ahoj", 1, 2.3, "some", \DateTime::createFromFormat("U", "$timestamp"));
+
+        $message = new TestJsonMessage(
+            "ahoj",
+            1,
+            2.3,
+            "some",
+            \DateTime::createFromFormat("U", "$timestamp"),
+            true
+        );
+
         $json = (string)$message;
 
         $expectedJson = Json::encode([
@@ -30,7 +40,8 @@ class JsonMessageTest extends TestCase
             'number' => 1,
             'anotherNumber' => 2.3,
             'mixedType' => "some",
-            'datetime' => $timestamp
+            'datetime' => $timestamp,
+            'okay' => true
         ]);
 
         Assert::equal($expectedJson, $json);
@@ -41,7 +52,7 @@ class JsonMessageTest extends TestCase
     public function getJsonTestValues()
     {
         return [
-            ["ahoj", 1, 2.3, "some", 1546300800]
+            ["ahoj", 1, 2.3, "some", 1546300800, true]
         ];
     }
 
@@ -50,7 +61,7 @@ class JsonMessageTest extends TestCase
     /**
      * @dataProvider getJsonTestValues
      */
-    public function testJsonToMessage($text, $number, $anotherNumber, $mixedType, $timestamp)
+    public function testJsonToMessage($text, $number, $anotherNumber, $mixedType, $timestamp, $okay)
     {
         $json = Json::encode([
             'type' => TestJsonMessage::class,
@@ -58,7 +69,8 @@ class JsonMessageTest extends TestCase
             'number' => $number,
             'anotherNumber' => $anotherNumber,
             'mixedType' => $mixedType,
-            'datetime' => $timestamp
+            'datetime' => $timestamp,
+            'okay' => $okay
         ]);
 
         /** @var TestJsonMessage $message */
@@ -70,6 +82,7 @@ class JsonMessageTest extends TestCase
         Assert::same($anotherNumber, $message->getAnotherNumber());
         Assert::same($mixedType, $message->getMixedType());
         Assert::equal($timestamp, $message->getDatetime()->getTimestamp());
+        Assert::equal($okay, $message->isOkay());
     }
 
 
@@ -98,6 +111,20 @@ class JsonMessageTest extends TestCase
             ]);
             JsonMessage::fromJson($json);
         }, \InvalidArgumentException::class, "Class 'SomeClassName' not found.");
+    }
+
+
+
+    public function testMissingGetterMethod()
+    {
+        Assert::error(
+            function () {
+                $message = new TestInvalidJsonMessage("a");
+                (string)$message;
+            },
+            E_USER_ERROR,
+            "#No getter#"
+        );
     }
 }
 
