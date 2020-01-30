@@ -86,7 +86,7 @@ class Consumer implements IConsumer
         $this->memoryLimit = $maxMemoryLimit;
         $this->setup();
 
-        $timeout = $maxExecutionTime;
+        $timeout = 5;// debug $maxExecutionTime;
 
         while ($this->getChannel()->is_consuming()) {
             if ($this->shouldStop()) {
