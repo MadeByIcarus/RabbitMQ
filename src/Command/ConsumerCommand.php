@@ -105,9 +105,10 @@ class ConsumerCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $output->writeln("Started at " . time());
+        $start = time();
+        $output->writeln("Started at " . time() . " (" . date("H:i:s") . ")");
         $this->consumer->consume($this->amount, $this->executionTime, $this->memoryLimit);
-        $output->writeln("Finished at ". time());
+        $output->writeln("Finished at " . time() . ", runtime " . (time() - $start) . "s");
         return 0;
     }
 
